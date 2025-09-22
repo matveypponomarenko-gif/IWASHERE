@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just a Clicking Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .menu-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .menu-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .game-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        #counter {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .multiplier {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        #clickButton {
+            font-size: 1.5em;
+            padding: 20px 60px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            margin: 10px 0;
+        }
+
+        #clickButton:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        #clickButton:active:not(:disabled) {
+            transform: scale(0.95);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        #clickButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .anti-cheat-warning {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin: 10px 0;
+            min-height: 20px;
+        }
+
+        .prestige-section {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid gold;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .prestige-info {
+            margin-bottom: 15px;
+        }
+
+        #prestigeButton {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #prestigeButton:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        #prestigeButton:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .pets-section, .pet-house-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .pet-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .pet-card.owned {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .pet-image {
+            width: 80px;
+            height: 80px;
+            font-size: 40px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .pet-house .pet-image {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pet-card.cat .pet-image { animation-delay: 0s; }
+        .pet-card.dog .pet-image { animation-delay: 0.2s; }
+        .pet-card.dragon .pet-image { animation-delay: 0.4s; }
+        .pet-card.robot .pet-image { animation-delay: 0.6s; }
+        .pet-card.alien .pet-image { animation-delay: 0.8s; }
+        .pet-card.unicorn .pet-image { animation-delay: 1s; }
+        .pet-card.phoenix .pet-image { animation-delay: 1.2s; }
+        .pet-card.cthulhu .pet-image { animation-delay: 1.4s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .pet-card.dragon .pet-image {
+            animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+        }
+
+        .pet-card.unicorn .pet-image {
+            animation: float 3s ease-in-out infinite, glow 1.5s ease-in-out infinite;
+        }
+
+        .pet-card.phoenix .pet-image {
+            animation: float 2s ease-in-out infinite, glow 1s ease-in-out infinite;
+        }
+
+        .pet-card.cthulhu .pet-image {
+            animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+        }
+
+        .pet-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .pet-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            min-height: 40px;
+        }
+
+        .pet-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .buy-pet-btn, .sell-pet-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .buy-pet-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .sell-pet-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff5252);
+            color: white;
+        }
+
+        .buy-pet-btn:hover:not(:disabled), .sell-pet-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .buy-pet-btn:disabled, .sell-pet-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .pet-house-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pet-house-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pet-house-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .pet-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .pet-actions button {
+            flex: 1;
+            padding: 8px 12px;
+        }
+
+        .sell-all-btn {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            margin-top: 10px;
+        }
+
+        .pet-house-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .reset-section {
+            margin-top: 20px;
+        }
+
+        #resetButton {
+            padding: 12px 30px;
+            background: rgba(255, 77, 77, 0.8);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #resetButton:hover {
+            background: rgba(255, 77, 77, 1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Just a Clicking Game</h1>
+            <div class="subtitle">Click your way to infinity!</div>
+        </header>
+
+        <nav class="menu">
+            <button class="menu-btn active" data-section="game">Game</button>
+            <button class="menu-btn" data-section="pets">Pet Shop</button>
+            <button class="menu-btn" data-section="pet-house">Pet House</button>
+            <button class="menu-btn" data-section="stats">Statistics</button>
+        </nav>
+
+        <main>
+            <section id="game-section" class="game-section">
+                <div class="multiplier">Multiplier: ×<span id="multiplier">1</span></div>
+                <div class="multiplier">Prestige: <span id="prestige-level">0</span></div>
+                <div class="multiplier">Auto-clicks: <span id="auto-clicks">0</span>/sec</div>
+                <div id="counter">0 Clicks</div>
+                <button id="clickButton">CLICK ME!</button>
+                <div class="anti-cheat-warning" id="antiCheatWarning"></div>
+                
+                <div class="prestige-section">
+                    <div class="prestige-info">
+                        <h3>Prestige System</h3>
+                        <p>Next Prestige at: <span id="prestige-cost">50</span> clicks</p>
+                        <p>Reward: +1 multiplier</p>
+                    </div>
+                    <button id="prestigeButton">PRESTIGE</button>
+                </div>
+            </section>
+
+            <section id="pets-section" class="pets-section">
+                <h2>Pet Shop</h2>
+                <p>Buy pets to automatically click for you!</p>
+                <div class="pets-grid" id="petsGrid">
+                    <!-- Pets will be generated by JavaScript -->
+                </div>
+            </section>
+
+            <section id="pet-house-section" class="pet-house-section">
+                <div class="pet-house-header">
+                    <h2>Pet House</h2>
+                    <button class="sell-all-btn" onclick="sellAllPets()">Sell All Pets</button>
+                </div>
+                <p>Manage your pets collection</p>
+                <div class="pet-house-grid" id="petHouseGrid">
+                    <!-- Pet house content will be generated by JavaScript -->
+                </div>
+            </section>
+
+            <section id="stats-section" class="stats-section">
+                <h2>Your Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>Total Clicks</div>
+                        <div class="stat-value" id="total-clicks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Clicks Per Second</div>
+                        <div class="stat-value" id="cps">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Auto Clicks/Sec</div>
+                        <div class="stat-value" id="auto-cps">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Session Time</div>
+                        <div class="stat-value" id="session-time">0s</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Prestige Level</div>
+                        <div class="stat-value" id="stats-prestige">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Multiplier</div>
+                        <div class="stat-value" id="stats-multiplier">×1</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Total Pets</div>
+                        <div class="stat-value" id="total-pets">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Total Prestige Clicks</div>
+                        <div class="stat-value" id="total-prestige-clicks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Pets Sold</div>
+                        <div class="stat-value" id="pets-sold">0</div>
+                    </div>
+                </div>
+                
+                <div class="reset-section">
+                    <button id="resetButton">Reset All Progress</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Pet definitions with emoji images
+        const pets = [
+            {
+                id: 'cat',
+                name: 'Cat',
+                emoji: '🐱',
+                cost: 50,
+                clicksPerSecond: 1,
+                description: 'A lazy cat that occasionally clicks'
+            },
+            {
+                id: 'dog',
+                name: 'Dog',
+                emoji: '🐶',
+                cost: 100,
+                clicksPerSecond: 2,
+                description: 'Loyal dog that clicks regularly'
+            },
+            {
+                id: 'dragon',
+                name: 'Dragon',
+                emoji: '🐉',
+                cost: 500,
+                clicksPerSecond: 5,
+                description: 'Mythical beast with powerful clicks'
+            },
+            {
+                id: 'robot',
+                name: 'Robot',
+                emoji: '🤖',
+                cost: 1000,
+                clicksPerSecond: 10,
+                description: 'Perfect clicking machine'
+            },
+            {
+                id: 'alien',
+                name: 'Alien',
+                emoji: '👽',
+                cost: 5000,
+                clicksPerSecond: 25,
+                description: 'Advanced alien technology'
+            },
+            {
+                id: 'unicorn',
+                name: 'Unicorn',
+                emoji: '🦄',
+                cost: 10000,
+                clicksPerSecond: 50,
+                description: 'Magical creature with rainbow clicks'
+            },
+            {
+                id: 'phoenix',
+                name: 'Phoenix',
+                emoji: '🔥',
+                cost: 50000,
+                clicksPerSecond: 100,
+                description: 'Reborn from ashes, clicks eternally'
+            },
+            {
+                id: 'cthulhu',
+                name: 'Cthulhu',
+                emoji: '🐙',
+                cost: 100000,
+                clicksPerSecond: 250,
+                description: 'Ancient one with cosmic clicking power'
+            }
+        ];
+
+        // Get elements
+        const clickButton = document.getElementById('clickButton');
+        const counterElement = document.getElementById('counter');
+        const resetButton = document.getElementById('resetButton');
+        const menuButtons = document.querySelectorAll('.menu-btn');
+        const gameSection = document.getElementById('game-section');
+        const petsSection = document.getElementById('pets-section');
+        const petHouseSection = document.getElementById('pet-house-section');
+        const statsSection = document.getElementById('stats-section');
+        const totalClicksElement = document.getElementById('total-clicks');
+        const cpsElement = document.getElementById('cps');
+        const autoCpsElement = document.getElementById('auto-cps');
+        const sessionTimeElement = document.getElementById('session-time');
+        const antiCheatWarning = document.getElementById('antiCheatWarning');
+        const prestigeButton = document.getElementById('prestigeButton');
+        const prestigeCostElement = document.getElementById('prestige-cost');
+        const multiplierElement = document.getElementById('multiplier');
+        const prestigeLevelElement = document.getElementById('prestige-level');
+        const autoClicksElement = document.getElementById('auto-clicks');
+        const statsPrestigeElement = document.getElementById('stats-prestige');
+        const statsMultiplierElement = document.getElementById('stats-multiplier');
+        const totalPrestigeClicksElement = document.getElementById('total-prestige-clicks');
+        const totalPetsElement = document.getElementById('total-pets');
+        const petsSoldElement = document.getElementById('pets-sold');
+        const petsGrid = document.getElementById('petsGrid');
+        const petHouseGrid = document.getElementById('petHouseGrid');
+
+        // Game state
+        let count = parseInt(localStorage.getItem('clickCount')) || 0;
+        let prestigeLevel = parseInt(localStorage.getItem('prestigeLevel')) || 0;
+        let multiplier = parseInt(localStorage.getItem('multiplier')) || 1;
+        let totalPrestigeClicks = parseInt(localStorage.getItem('totalPrestigeClicks')) || 0;
+        let ownedPets = JSON.parse(localStorage.getItem('ownedPets')) || {};
+        let petsSold = parseInt(localStorage.getItem('petsSold')) || 0;
+        let startTime = Date.now();
+        let lastClickTime = Date.now();
+        let clicksThisSecond = 0;
+        let currentCPS = 0;
+        let lastClickTimestamp = 0;
+        let clickTimeout = null;
+        let isClickAllowed = true;
+        let totalAutoClicks = 0;
+
+        // Initialize pets
+        pets.forEach(pet => {
+            if (!ownedPets[pet.id]) {
+                ownedPets[pet.id] = 0;
+            }
+        });
+
+        // Prestige cost calculation
+        function getPrestigeCost() {
+            if (totalPrestigeClicks < 50) return 50;
+            if (totalPrestigeClicks < 10000) return Math.ceil(50 * Math.pow(2, Math.floor(totalPrestigeClicks / 50)));
+            if (totalPrestigeClicks < 100000) return Math.ceil(10000 * Math.pow(1.2, Math.floor((totalPrestigeClicks - 10000) / 1000)));
+            return Infinity;
+        }
+
+        // Calculate auto clicks per second
+        function calculateAutoCPS() {
+            let autoCPS = 0;
+            pets.forEach(pet => {
+                autoCPS += ownedPets[pet.id] * pet.clicksPerSecond * multiplier;
+            });
+            return autoCPS;
+        }
+
+        // Calculate sell price (70% of original cost)
+        function getSellPrice(pet) {
+            return Math.floor(pet.cost * 0.7);
+        }
+
+        // Auto-clicker system
+        function startAutoClicker() {
+            setInterval(() => {
+                const autoCPS = calculateAutoCPS();
+                if (autoCPS > 0) {
+                    count += autoCPS;
+                    totalAutoClicks += autoCPS;
+                    updateDisplay();
+                    localStorage.setItem('clickCount', count);
+                }
+            }, 1000);
+        }
+
+        // Initialize
+        updateDisplay();
+        renderPetsShop();
+        renderPetHouse();
+        startStatsUpdate();
+        startAutoClicker();
+        updatePrestigeButton();
+
+        // Menu navigation
+        menuButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.dataset.section;
+                
+                menuButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                gameSection.style.display = section === 'game' ? 'block' : 'none';
+                petsSection.style.display = section === 'pets' ? 'block' : 'none';
+                petHouseSection.style.display = section === 'pet-house' ? 'block' : 'none';
+                statsSection.classList.toggle('active', section === 'stats');
+                
+                if (section === 'pet-house') {
+                    renderPetHouse();
+                }
+            });
+        });
+
+        // Update all displays
+        function updateDisplay() {
+            counterElement.textContent = count.toLocaleString() + ' Clicks';
+            multiplierElement.textContent = multiplier;
+            prestigeLevelElement.textContent = prestigeLevel;
+            prestigeCostElement.textContent = getPrestigeCost().toLocaleString();
+            autoClicksElement.textContent = calculateAutoCPS().toLocaleString();
+        }
+
+        // Render pets shop
+        function renderPetsShop() {
+            petsGrid.innerHTML = '';
+            pets.forEach(pet => {
+                const petCard = document.createElement('div');
+                petCard.className = `pet-card ${pet.id} ${ownedPets[pet.id] > 0 ? 'owned' : ''}`;
+                
+                petCard.innerHTML = `
+                    <div class="pet-image">${pet.emoji}</div>
+                    <div class="pet-name">${pet.name}</div>
+                    <div class="pet-description">${pet.description}</div>
+                    <div class="pet-stats">
+                        <span>Cost: ${pet.cost.toLocaleString()}</span>
+                        <span>CPS: ${pet.clicksPerSecond}</span>
+                    </div>
+                    <div class="pet-stats">
+                        <span>Owned: ${ownedPets[pet.id]}</span>
+                        <span>Total CPS: ${(ownedPets[pet.id] * pet.clicksPerSecond * multiplier).toLocaleString()}</span>
+                    </div>
+                    <button class="buy-pet-btn" 
+                            onclick="buyPet('${pet.id}')" 
+                            ${count < pet.cost ? 'disabled' : ''}>
+                        ${ownedPets[pet.id] > 0 ? 'BUY MORE' : 'BUY'} - ${pet.cost.toLocaleString()} clicks
+                    </button>
+                `;
+                
+                petsGrid.appendChild(petCard);
+            });
+        }
+
+        // Render pet house
+        function renderPetHouse() {
+            petHouseGrid.innerHTML = '';
+            let hasPets = false;
+            
+            pets.forEach(pet => {
+                if (ownedPets[pet.id] > 0) {
+                    hasPets = true;
+                    const sellPrice = getSellPrice(pet);
+                    const totalSellPrice = sellPrice * ownedPets[pet.id];
+                    
+                    const petCard = document.createElement('div');
+                    petCard.className = `pet-house-card pet-card ${pet.id}`;
+                    
+                    petCard.innerHTML = `
+                        <div class="pet-image">${pet.emoji}</div>
+                        <div class="pet-name">${pet.name}</div>
+                        <div class="pet-description">${pet.description}</div>
+                        <div class="pet-stats">
+                            <span>Owned: ${ownedPets[pet.id]}</span>
+                            <span>CPS: ${pet.clicksPerSecond} each</span>
+                        </div>
+                        <div class="pet-stats">
+                            <span>Total CPS: ${(ownedPets[pet.id] * pet.clicksPerSecond * multiplier).toLocaleString()}</span>
+                            <span>Sell Price: ${sellPrice.toLocaleString()} each</span>
+                        </div>
+                        <div class="pet-actions">
+                            <button class="sell-pet-btn" onclick="sellPet('${pet.id}', 1)">
+                                Sell 1 (+${sellPrice})
+                            </button>
+                            <button class="sell-pet-btn" onclick="sellPet('${pet.id}', 5)">
+                                Sell 5 (+${(sellPrice * 5).toLocaleString()})
+                            </button>
+                        </div>
+                        <button class="sell-pet-btn sell-all-btn" onclick="sellPet('${pet.id}', ${ownedPets[pet.id]})">
+                            Sell All ${ownedPets[pet.id]} (+${totalSellPrice.toLocaleString()})
+                        </button>
+                    `;
+                    
+                    petHouseGrid.appendChild(petCard);
+                }
+            });
+            
+            if (!hasPets) {
+                petHouseGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <div style="font-size: 4em; margin-bottom: 20px;">🏠</div>
+                        <h3>No pets in your house yet!</h3>
+                        <p>Visit the Pet Shop to buy some pets.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Buy pet function
+        window.buyPet = function(petId) {
+            const pet = pets.find(p => p.id === petId);
+            if (pet && count >= pet.cost) {
+                count -= pet.cost;
+                ownedPets[petId]++;
+                localStorage.setItem('clickCount', count);
+                localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+                updateDisplay();
+                renderPetsShop();
+                renderPetHouse();
+                updatePrestigeButton();
+                
+                antiCheatWarning.textContent = `🎉 You bought a ${pet.name}!`;
+                setTimeout(() => {
+                    antiCheatWarning.textContent = "";
+                }, 2000);
+            }
+        };
+
+        // Sell pet function
+        window.sellPet = function(petId, amount) {
+            const pet = pets.find(p => p.id === petId);
+            if (pet && ownedPets[petId] >= amount) {
+                const sellPrice = getSellPrice(pet) * amount;
+                ownedPets[petId] -= amount;
+                count += sellPrice;
+                petsSold += amount;
+                
+                localStorage.setItem('clickCount', count);
+                localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+                localStorage.setItem('petsSold', petsSold);
+                
+                updateDisplay();
+                renderPetsShop();
+                renderPetHouse();
+                updatePrestigeButton();
+                
+                antiCheatWarning.textContent = `💰 Sold ${amount} ${pet.name}(s) for ${sellPrice.toLocaleString()} clicks!`;
+                setTimeout(() => {
+                    antiCheatWarning.textContent = "";
+                }, 2000);
+            }
+        };
+
+        // Sell all pets function
+        window.sellAllPets = function() {
+            let totalSold = 0;
+            let totalPrice = 0;
+            let petsToSell = [];
+            
+            pets.forEach(pet => {
+                if (ownedPets[pet.id] > 0) {
+                    petsToSell.push({pet, amount: ownedPets[pet.id]});
+                }
+            });
+            
+            if (petsToSell.length === 0) {
+                antiCheatWarning.textContent = "You don't have any pets to sell!";
+                setTimeout(() => {
+                    antiCheatWarning.textContent = "";
+                }, 2000);
+                return;
+            }
+            
+            if (confirm(`Sell all pets for ${petsToSell.reduce((sum, item) => sum + getSellPrice(item.pet) * item.amount, 0).toLocaleString()} clicks?`)) {
+                petsToSell.forEach(item => {
+                    const sellPrice = getSellPrice(item.pet) * item.amount;
+                    ownedPets[item.pet.id] = 0;
+                    count += sellPrice;
+                    petsSold += item.amount;
+                    totalSold += item.amount;
+                    totalPrice += sellPrice;
+                });
+                
+                localStorage.setItem('clickCount', count);
+                localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+                localStorage.setItem('petsSold', petsSold);
+                
+                updateDisplay();
+                renderPetsShop();
+                renderPetHouse();
+                updatePrestigeButton();
+                
+                antiCheatWarning.textContent = `💰 Sold all ${totalSold} pets for ${totalPrice.toLocaleString()} clicks!`;
+                setTimeout(() => {
+                    antiCheatWarning.textContent = "";
+                }, 3000);
+            }
+        };
+
+        // Anti-autoclicker system
+        function handleClick() {
+            const now = Date.now();
+            
+            if (now - lastClickTimestamp < 100) {
+                antiCheatWarning.textContent = "⚠️ Too fast! Slow down your clicking.";
+                isClickAllowed = false;
+                clickButton.disabled = true;
+                
+                if (clickTimeout) clearTimeout(clickTimeout);
+                clickTimeout = setTimeout(() => {
+                    isClickAllowed = true;
+                    clickButton.disabled = false;
+                    antiCheatWarning.textContent = "";
+                }, 2000);
+                return;
+            }
+            
+            lastClickTimestamp = now;
+            
+            if (!isClickAllowed) return;
+            
+            count += multiplier;
+            updateDisplay();
+            localStorage.setItem('clickCount', count);
+            
+            if (now - lastClickTime < 1000) {
+                clicksThisSecond++;
+            } else {
+                currentCPS = (clicksThisSecond + calculateAutoCPS()) * multiplier;
+                clicksThisSecond = 1;
+                lastClickTime = now;
+            }
+            
+            updatePrestigeButton();
+            renderPetsShop();
+        }
+
+        // Click handler
+        clickButton.addEventListener('click', handleClick);
+
+        // Prestige system
+        prestigeButton.addEventListener('click', function() {
+            const prestigeCost = getPrestigeCost();
+            
+            if (count >= prestigeCost && prestigeCost !== Infinity) {
+                if (confirm(`Prestige for ${prestigeCost.toLocaleString()} clicks? You will lose all clicks and pets but gain +1 multiplier!`)) {
+                    totalPrestigeClicks += count;
+                    count = 0;
+                    prestigeLevel++;
+                    multiplier++;
+                    
+                    // Reset pets on prestige
+                    pets.forEach(pet => {
+                        ownedPets[pet.id] = 0;
+                    });
+                    
+                    localStorage.setItem('clickCount', count);
+                    localStorage.setItem('prestigeLevel', prestigeLevel);
+                    localStorage.setItem('multiplier', multiplier);
+                    localStorage.setItem('totalPrestigeClicks', totalPrestigeClicks);
+                    localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+                    
+                    updateDisplay();
+                    renderPetsShop();
+                    renderPetHouse();
+                    updatePrestigeButton();
+                    antiCheatWarning.textContent = "🎉 Prestige achieved! Multiplier increased!";
+                    setTimeout(() => {
+                        antiCheatWarning.textContent = "";
+                    }, 3000);
+                }
+            }
+        });
+
+        function updatePrestigeButton() {
+            const prestigeCost = getPrestigeCost();
+            prestigeButton.disabled = count < prestigeCost || prestigeCost === Infinity;
+            
+            if (prestigeCost === Infinity) {
+                prestigeButton.textContent = "MAX PRESTIGE REACHED";
+            } else {
+                prestigeButton.textContent = `PRESTIGE (${prestigeCost.toLocaleString()} clicks)`;
+            }
+        }
+
+        // Reset handler
+        resetButton.addEventListener('click', function() {
+            if(confirm("Are you sure you want to reset ALL progress including prestige and pets?")) {
+                count = 0;
+                prestigeLevel = 0;
+                multiplier = 1;
+                totalPrestigeClicks = 0;
+                totalAutoClicks = 0;
+                petsSold = 0;
+                startTime = Date.now();
+                clicksThisSecond = 0;
+                currentCPS = 0;
+                
+                pets.forEach(pet => {
+                    ownedPets[pet.id] = 0;
+                });
+                
+                localStorage.setItem('clickCount', count);
+                localStorage.setItem('prestigeLevel', prestigeLevel);
+                localStorage.setItem('multiplier', multiplier);
+                localStorage.setItem('totalPrestigeClicks', totalPrestigeClicks);
+                localStorage.setItem('ownedPets', JSON.stringify(ownedPets));
+                localStorage.setItem('petsSold', petsSold);
+                
+                updateDisplay();
+                renderPetsShop();
+                renderPetHouse();
+                updateStats();
+                antiCheatWarning.textContent = "Progress reset!";
+                setTimeout(() => {
+                    antiCheatWarning.textContent = "";
+                }, 2000);
+            }
+        });
+
+        // Stats update
+        function startStatsUpdate() {
+            setInterval(updateStats, 1000);
+        }
+
+        function updateStats() {
+            const sessionTime = Math.floor((Date.now() - startTime) / 1000);
+            const totalPetsCount = Object.values(ownedPets).reduce((a, b) => a + b, 0);
+            
+            totalClicksElement.textContent = (count + totalPrestigeClicks + totalAutoClicks).toLocaleString();
+            cpsElement.textContent = (currentCPS + calculateAutoCPS()).toFixed(1);
+            autoCpsElement.textContent = calculateAutoCPS().toLocaleString();
+            sessionTimeElement.textContent = sessionTime + 's';
+            statsPrestigeElement.textContent = prestigeLevel;
+            statsMultiplierElement.textContent = '×' + multiplier;
+            totalPrestigeClicksElement.textContent = totalPrestigeClicks.toLocaleString();
+            totalPetsElement.textContent = totalPetsCount;
+            petsSoldElement.textContent = petsSold;
+        }
+    </script>
+</body>
+</html>
